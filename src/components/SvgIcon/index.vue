@@ -15,12 +15,14 @@ const props = defineProps({
     }
 })
 
-const iconName = computed(() => `#icon-${props.icon}`)
+const iconName = computed(() => {
+    return `#icon-${props.icon}`
+})
 
 </script>
 
 <style lang="scss" scoped>
-.swg-icon {
+.svg-icon {
     width: 1em;
     height: 1em;
     vertical-align: -0.15em;
