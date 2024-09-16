@@ -12,6 +12,13 @@ const webpack = require('webpack')
 module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src/')
+      }
+    }
+  },
   //定义autoimport
   configureWebpack: {
     plugins: [
@@ -91,8 +98,8 @@ css: {
   loaderOptions: {
     sass: {
       additionalData:`
-        @import "@/styles/variables.scss";  // scss文件地址
-        @import "@/styles/mixin.scss";     // scss文件地址
+        @use"@/styles/variables.scss" as *;  // scss文件地址
+        @use "@/styles/mixin.scss" as *;     // scss文件地址
       `
     }
   }

@@ -1,17 +1,24 @@
-<!-- 布局 -->
+<!-- 主页面的布局 -->
 <template>
     <div class="common-layout">
       <el-container class="app-wrapper">
-        <el-aside width="200px" class="sidebar-container">Aside</el-aside>
+        <el-aside width="200px" class="sidebar-container">
+          <Menu />
+        </el-aside>
         <el-container class="container">
           <el-header>Header</el-header>
-          <el-main>Main</el-main>
+          <el-main>
+            <router-view></router-view>
+          </el-main>
         </el-container>
       </el-container>
     </div>
-  </template> 
+</template> 
 
+<script setup>
+import Menu from './Menu'
 
+</script>
 
 <style lang="scss" scoped>
 .app-container {

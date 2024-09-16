@@ -1,5 +1,6 @@
 import {login as loginApi} from '../../api/login.js'
 import router from '../../router/index.js';
+import { setTokenTime } from '@/util/auth.js';
 
 export default{
     namespaced: true,
@@ -21,12 +22,18 @@ export default{
                     console.log(res)
                     // commit调用mutations中的方法
                     commit('setToken',res.token);
+                    setTokenTime();
                     router.replace('/');
                     resolve(res)
                 }).catch(err=>{
                     reject(err)
                 })
             })
+        },
+        logout({commit}){
+            commit('setToken','')
+            localStorage.clear();
+            router.replace('/login')
         }
     }
 }
