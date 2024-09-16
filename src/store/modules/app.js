@@ -6,12 +6,17 @@ export default{
     namespaced: true,
     state:()=>({
         token: localStorage.getItem('token') || '',   //读取token，没读到就为空
+        siderType:true,  //控制汉堡按钮的变量
     }),
     mutations:{
         setToken(state,token){
             state.token = token;
             localStorage.setItem('token',token);
         },
+        changeSiderType(state){
+            state.siderType = !state.siderType;
+            //console.log(state.siderType)
+        }
     },
     actions:{
         login({commit},userInfo){

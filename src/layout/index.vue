@@ -2,11 +2,13 @@
 <template>
     <div class="common-layout">
       <el-container class="app-wrapper">
-        <el-aside width="200px" class="sidebar-container">
+        <!-- 伸缩导航 -->
+        <el-aside :width="asideWidth" class="sidebar-container">
           <Menu />
         </el-aside>
-        <el-container class="container">
-          <el-header>Header</el-header>
+        <!-- 伸缩主页 -->
+        <el-container class="container" :class="{hidderContainer:!$store.getters.siderType}">
+          <el-header><Headers/></el-header>
           <el-main>
             <router-view></router-view>
           </el-main>
@@ -17,10 +19,19 @@
 
 <script setup>
 import Menu from './Menu'
+import Headers from './headers'
+import { useStore } from 'vuex';
+import { computed } from 'vue';
+
+const store= useStore()
+const asideWidth = computed(() => {
+  return store.getters.siderType?"210px":"67px"
+})
 
 </script>
 
 <style lang="scss" scoped>
+
 .app-container {
   position: relative;
   width: 100%;

@@ -1,3 +1,4 @@
+<!-- 这里是导航栏的组件代码 -->
 <template>
     <el-menu
         active-text-color="#ffd04b"
@@ -7,7 +8,9 @@
         text-color="#fff"
         router
         unique-opened
+        :collapse="!$store.getters.siderType"  
       >
+      <!-- collapse 控制伸缩 -->
         <el-sub-menu :index="item.id" v-for="(item,index) in menusList" :key="item.id">
           <template #title>
             <el-icon>
