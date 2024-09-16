@@ -1,5 +1,5 @@
 import {login as loginApi} from '../../api/login.js'
-import router from '@/router/index.js';
+import router from '../../router/index.js';
 
 export default{
     namespaced: true,
@@ -18,8 +18,9 @@ export default{
                 //失败了就传入then的第二个参数
                 //成功就传入then的第一个参数
                 loginApi(userInfo).then(res=>{
+                    console.log(res)
                     // commit调用mutations中的方法
-                    commit('setToken',res.data.token);
+                    commit('setToken',res.token);
                     router.replace('/');
                     resolve(res)
                 }).catch(err=>{

@@ -86,5 +86,15 @@ module.exports = defineConfig({
       logLevel: 'debug', // 添加日志记录级别
     }
   }
+},
+css: {
+  loaderOptions: {
+    sass: {
+      additionalData:`
+        @import "@/styles/variables.scss";  // scss文件地址
+        @import "@/styles/mixin.scss";     // scss文件地址
+      `
+    }
+  }
 }
 });

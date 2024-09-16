@@ -25,12 +25,16 @@
 </template>
 
 <script setup>
-console.log(process.env.VUE_APP_BASE_URL)
+// console.log(process.env.VUE_APP_BASE_URL)
 import {ref} from 'vue'
 //将引入的组件导入到模板中
 import {User} from '@element-plus/icons-vue'
 
 // import {login} from '../../api/login.js'
+import {useStore} from 'vuex'
+
+const store = useStore()
+
 
 const form = ref({
     username: '',
@@ -54,7 +58,11 @@ const handleLogin = ()=>{
   formRef.value.validate(async(valid) => {
     if (valid) {
       // alert('submit!');
+      // 调用登录接口
       // await login(form.value)
+
+      // ***调用vuex中app.js的actions 登录方法****
+      store.dispatch('app/login',form.value)
     } else {
       console.log('error submit!!');
       return false;
