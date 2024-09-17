@@ -1,12 +1,16 @@
 <template>
     <div class="navbar">
-        <hamburger />
+        <Hamburger />
+        <Breadcrumb/>
+        <div class="navbar-right"><Avatar/></div>
     </div>
 </template>
 
 
 <script setup>
-import hamburger from './component/hamburger.vue';
+import Hamburger from './component/hamburger.vue';
+import Breadcrumb from './component/breadcrumb.vue';
+import Avatar from './component/avatar.vue';
 </script>
 
 <style lang="scss" scoped>

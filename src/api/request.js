@@ -31,8 +31,8 @@ service.interceptors.request.use((config)=>{
 service.interceptors.response.use((response)=>{
   const {code,msg,data} = response.data;
   if(code === 200 || code === 201){
-    ElMessage(msg)
-    console.log(data)
+    //ElMessage(msg)
+    //console.log(data)
     return data;
   }else{
     //element plus 消息提示

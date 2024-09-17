@@ -1,5 +1,5 @@
 <template>
-  <div>users</div>
+  <div>usecases</div>
 </template>
 
 <script></script>

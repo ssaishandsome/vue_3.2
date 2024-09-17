@@ -1,7 +1,64 @@
 <template>
-  <div>projects</div>
+  <el-card>
+    <el-row :gutter="20" class="header">
+      <el-col :span="7">
+        <el-input placeholder="请输入内容" v-model="queryForm.query"></el-input>
+      </el-col>
+      <el-col :span="8">
+        <el-button type="primary" :icon="Search">搜索</el-button>
+        <el-button type="primary" >添加项目</el-button>
+      </el-col>
+    </el-row>
+    
+    <el-table :data="tableData" stripe style="width: 100%">
+      <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
+
+          <template v-slot="{row}" v-if="item.props === 'projectStatus'">
+            <el-switch v-model="row.projectStatus" />
+          </template>
+
+        
+        <template #default v-slot="{row}" v-if="item.props === 'action'">
+          <el-button type="danger" :icon="Delete" circle />
+          <el-button type="primary" :icon="Edit" circle />
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-card>
 </template>
 
-<script setup></script>
+<script setup>
+import { Search,Delete,Edit } from '@element-plus/icons-vue';
+import {ref} from 'vue'
+import {getProjects} from '@/api/projects'
+import {options} from './options'
 
-<style lang="scss" scoped></style>
+
+const queryForm = ref({
+  query: '',
+  page: 1,
+  pageSize: 2
+})
+
+const tableData = ref([])
+
+
+const initGetProjects = async() => {
+    const res = await getProjects(queryForm.value)
+    //console.log(res)
+    tableData.value = res
+    console.log(tableData.value)
+}
+
+initGetProjects()
+
+
+
+</script>
+
+<style lang="scss" scoped>
+.header{
+  padding-bottom:24px;
+  box-sizing: border-box;
+}
+</style>

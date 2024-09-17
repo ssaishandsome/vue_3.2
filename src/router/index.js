@@ -16,14 +16,14 @@ const routes = [
   },
   {
     path: '/',
-    name: 'home',
+    name: '首页',
     component: () => import(/* webpackChunkName: "about" */ '../layout/index.vue'),
-    redirect:'/users',//重定向
+    redirect:'/projects',//重定向
     children:[
       {
-        path:'users',
-        name:'users',
-        component:()=> import('@/views/users/index.vue')
+        path:'usecases',
+        name:'用例管理',
+        component:()=> import('@/views/usecases/index.vue')
       },
       {
         path:'roles',
@@ -32,13 +32,18 @@ const routes = [
       },
       {
         path:'projects',
-        name:'projects',
+        name:'项目管理',
         component:()=> import('@/views/projects/index.vue')
       },
       {
         path:'computed',
-        name:'computed',
+        name:'统计管理',
         component:()=> import('@/views/computed/index.vue')
+      },
+      {
+        path:'bugs',
+        name:'BUG管理',
+        component:()=> import('@/views/bugs/index.vue')
       }
     ]
   }
