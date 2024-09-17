@@ -29,14 +29,15 @@ service.interceptors.request.use((config)=>{
 
 //一个响应请求拦截器,来拦截服务器发送的响应，并进行处理响应状态的
 service.interceptors.response.use((response)=>{
-
-  const {data,meta} = response.data;
-  if(meta.status === 200 || meta.status === 201){
+  const {code,msg,data} = response.data;
+  if(code === 200 || code === 201){
+    ElMessage(msg)
+    console.log(data)
     return data;
   }else{
     //element plus 消息提示
-    ElMessage.error(meta.msg)
-    return Promise.reject(meta.msg)
+    ElMessage.error(msg)
+    return Promise.reject(msg)
   }
 },error=>{
   //连响应都失败了

@@ -3,7 +3,7 @@
 import router from './index'
 import store from '../store'
 
-const whiteList = ['/login'] // 不需要登录的页面
+const whiteList = ['/login','/regist'] // 不需要登录的页面
 
 router.beforeEach((to, from, next) => {
   if(store.getters.token) {

@@ -20,7 +20,9 @@
             </el-form-item>
             <!-- 统一校验 -->
             <el-button type="primary" class="login-button" @click="handleLogin">用户登录</el-button>
+            
         </el-form>
+        <el-button type="primary" class="regist-button" @click="handleRegist">用户注册</el-button>
     </div>
 </template>
 
@@ -32,6 +34,7 @@ import {User} from '@element-plus/icons-vue'
 
 // import {login} from '../../api/login.js'
 import {useStore} from 'vuex'
+import router from '../../router/index.js';
 
 const store = useStore()
 
@@ -69,6 +72,11 @@ const handleLogin = ()=>{
     }
   })
 }
+const handleRegist = ()=>{
+  console.log('注册')
+  router.replace('/regist')
+}
+
 
 const passwordType = ref('password')
 const ChangeType = ()=>{
@@ -129,12 +137,24 @@ $cursor: #fff;
       }
     }
     .login-button {
+      text-align: center;
       width: 100%;
       box-sizing: border-box;
-
     }
+    
   }
-
+  .regist-button{ // 
+        margin-top: 10px;
+        width: 100px;
+        height: 30px;
+        color: hsl(0, 0%, 100%);
+        background-color: #409eff;
+        cursor: pointer;
+        &:hover {
+          background-color: #66b1ff;
+        }
+        margin-left: 620px;
+      }
   .tips {
     font-size: 16px;
     line-height: 28px;
@@ -192,4 +212,5 @@ $cursor: #fff;
     user-select: none;
   }
 }
+
 </style>
