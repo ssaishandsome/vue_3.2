@@ -59,8 +59,8 @@ const savePath = (path)=>{
 
 const initMenusList = async ()=>{
     //将响应的数据赋值给menusList
-    menusList.value = await menuList()
-    //console.log(menusList.value)
+    menusList.value = await (await menuList()).data
+    console.log(menusList.value)
 }
 initMenusList()
 </script>

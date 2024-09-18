@@ -81,10 +81,11 @@ module.exports = defineConfig({
   },
   //定义跨域
   devServer: {
+    webSocketServer:false,
     proxy: {
       '/api': {
         //目标服务器dizhi
-        target: 'http://127.0.0.1:8001/',
+        target: 'http://127.0.0.1:7777/',
         changeOrigin: true,
         //重写路径
         pathRewrite: {

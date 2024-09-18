@@ -2,5 +2,6 @@
 
 export default{
     token:(state)=>state.app.token,
-    siderType:(state)=>state.app.siderType
+    siderType:(state)=>state.app.siderType,
+    username:(state)=>state.app.username,
 }

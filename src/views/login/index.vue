@@ -38,7 +38,6 @@ import router from '../../router/index.js';
 
 const store = useStore()
 
-
 const form = ref({
     username: '',
     password: ''
@@ -66,6 +65,8 @@ const handleLogin = ()=>{
 
       // ***调用vuex中app.js的actions 登录方法****
       store.dispatch('app/login',form.value)
+      console.log(form.value.username)
+      store.commit('app/setUsername',form.value.username)
     } else {
       console.log('error submit!!');
       return false;

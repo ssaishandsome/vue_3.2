@@ -5,7 +5,7 @@
       />
         <template #dropdown>
         <el-dropdown-menu>
-            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item @click="Logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
         </template>
     </el-dropdown>
@@ -14,9 +14,15 @@
 
 <script setup>
 import { useStore } from 'vuex';
+import {logout}  from '@/api/login'
+import router from '@/router/index.js'
 
 const store = useStore()
-const logout = () => {
-    store.dispatch('app/logout')
+const Logout = async() => {
+    const res = await logout(localStorage.getItem('token'))
+    console.log(res)
+    store.commit('app/setToken','')
+    localStorage.clear();
+    router.replace('/login')
 }
 </script>

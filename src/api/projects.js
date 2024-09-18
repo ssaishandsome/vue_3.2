@@ -6,3 +6,11 @@ export const getProjects = (params) => {
     params
   })
 }
+
+export const createProjects = (data)=>{
+  return request({
+    url: '/projects/create',
+    method: 'post',
+    data
+  })
+}

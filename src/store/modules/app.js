@@ -7,6 +7,7 @@ export default{
     state:()=>({
         token: localStorage.getItem('token') || '',   //读取token，没读到就为空
         siderType:true,  //控制汉堡按钮的变量
+        username:'',
     }),
     mutations:{
         setToken(state,token){
@@ -16,7 +17,11 @@ export default{
         changeSiderType(state){
             state.siderType = !state.siderType;
             //console.log(state.siderType)
-        }
+        },
+        setUsername(state,username){
+            state.username = username;
+            localStorage.setItem('username',username);
+        },
     },
     actions:{
         login({commit},userInfo){
@@ -35,10 +40,10 @@ export default{
                 })
             })
         },
-        logout({commit}){
-            commit('setToken','')
-            localStorage.clear();
-            router.replace('/login')
-        }
+        // logout({commit}){
+        //     commit('setToken','')
+        //     localStorage.clear();
+        //     router.replace('/login')
+        // }
     }
 }

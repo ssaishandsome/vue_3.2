@@ -20,7 +20,8 @@ service.interceptors.request.use((config)=>{
       return Promise.reject(new Error("token已过期，请重新登录"))
     }
   }
-  config.headers.Authorization = localStorage.getItem('token')
+  config.headers['token'] = localStorage.getItem('token')
+  //console.log(config)
   return config
 },error=>{
    return Promise.reject(new Error(error))

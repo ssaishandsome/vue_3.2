@@ -5,8 +5,8 @@
         <el-input placeholder="请输入内容" v-model="queryForm.query"></el-input>
       </el-col>
       <el-col :span="8">
-        <el-button type="primary" :icon="Search">搜索</el-button>
-        <el-button type="primary" >添加项目</el-button>
+        <el-button type="primary" :icon="Search" @click="initGetProjects">搜索</el-button>
+        <el-button type="primary" @click="handleDialog">添加项目</el-button>
       </el-col>
     </el-row>
     
@@ -25,6 +25,7 @@
       </el-table-column>
     </el-table>
   </el-card>
+  <Dialog v-model="dialogVisible"></Dialog>
 </template>
 
 <script setup>
@@ -32,15 +33,20 @@ import { Search,Delete,Edit } from '@element-plus/icons-vue';
 import {ref} from 'vue'
 import {getProjects} from '@/api/projects'
 import {options} from './options'
-
+import Dialog from './components/dialog.vue'
 
 const queryForm = ref({
   query: '',
-  page: 1,
-  pageSize: 2
 })
 
 const tableData = ref([])
+
+//控制弹窗的显示
+const dialogVisible=ref(false)
+
+const handleDialog = () => {
+  dialogVisible.value = true
+}
 
 
 const initGetProjects = async() => {
