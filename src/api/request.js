@@ -19,7 +19,11 @@ service.interceptors.request.use((config)=>{
       store.dispatch('app/logout')
       return Promise.reject(new Error("token已过期，请重新登录"))
     }
-  }
+  }const service = axios.create({
+  baseURL: process.env.VUE_APP_BASE_URL,
+  // baseURL: '/api',
+  timeout: 5000,
+});
   config.headers['token'] = localStorage.getItem('token')
   //console.log(config)
   return config

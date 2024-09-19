@@ -7,7 +7,7 @@
     :before-close="handleClose"
     @close="handleClose"
     >
-    <el-form :model="form" :rules="rules" label-width="auto" style="max-width: 600px">
+    <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" style="max-width: 600px">
     <el-form-item label="项目名称" prop="projectName">
       <el-input v-model="form.projectName" />
     </el-form-item>
@@ -38,16 +38,28 @@ import { useStore } from 'vuex';
 
 const store = useStore()
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue','initProjectList'])
 const handleClose = () => {
     emits('update:modelValue', false)
 }
 
-const handleConfirm = async ()=>{
-    const now = new Date();
-    form.value.projectCreatedBy = store.getters.username
-    form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-    const res = await createProjects(form.value)
+const formRef = ref(null)
+// 使用formref.value.validate()进行表单验证
+const handleConfirm = ()=>{
+    formRef.value.validate(async (valid)=>{
+        if(valid){
+          console.log('success submit')
+          const now = new Date();
+          form.value.projectCreatedBy = store.getters.username
+          form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+          const res = await createProjects(form.value)
+          emits('initProjectList')
+          handleClose()
+        }else{
+          console.log('error submit')
+          return false
+        }
+    })
 }
 
 const form = ref({

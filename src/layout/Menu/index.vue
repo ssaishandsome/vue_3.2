@@ -48,7 +48,7 @@
 import {menuList} from '../../api/menu'
 import {ref} from 'vue'
 
-const iconList = ref(['user','setting','pie-chart'])
+const iconList = ref(['user','setting','setting','pie-chart'])
 const icon = ref('menu')
 
 const menusList =ref([])

@@ -146,7 +146,7 @@ $cursor: #fff;
   }
   .regist-button{ // 
         margin-top: 10px;
-        width: 100px;
+        width: 200px;
         height: 30px;
         color: hsl(0, 0%, 100%);
         background-color: #409eff;
@@ -154,7 +154,7 @@ $cursor: #fff;
         &:hover {
           background-color: #66b1ff;
         }
-        margin-left: 620px;
+        margin-left: 44%;
       }
   .tips {
     font-size: 16px;

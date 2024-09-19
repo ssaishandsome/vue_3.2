@@ -25,7 +25,7 @@
       </el-table-column>
     </el-table>
   </el-card>
-  <Dialog v-model="dialogVisible"></Dialog>
+  <Dialog v-model="dialogVisible" @initProjectList="initGetProjects"></Dialog>
 </template>
 
 <script setup>

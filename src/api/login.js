@@ -16,3 +16,11 @@ export const logout = (token) => {
         token
     })
 }
+
+export const regist = (data) => {
+    return request({
+        url:'/user/regist',
+        method:'post',
+        data
+    })
+}
