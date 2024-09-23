@@ -14,3 +14,18 @@ export const createProjects = (data)=>{
     data
   })
 }
+
+export const getModules = (projectId) =>{
+  return request({
+    url:`module/list/${projectId}`,
+    method: 'get',
+  })
+}
+
+export const createModules = (data)=>{
+  return request({
+    url: '/module/add',
+    method: 'post',
+    data
+  })
+}

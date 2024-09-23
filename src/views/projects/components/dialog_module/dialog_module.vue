@@ -1,18 +1,19 @@
 <template>
     <!-- model-value 实现单向绑定 -->
     <el-dialog
-    :model-value="dialogVisible"
-    title="添加项目"
+    :model-value="dialogModuleVisible"
+    title="添加项目模块"
     width="500"
     :before-close="handleClose"
     @close="handleClose"
+    append-to-body
     >
     <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" style="max-width: 600px">
-    <el-form-item label="项目名称" prop="projectName">
-      <el-input v-model="form.projectName" />
+    <el-form-item label="项目模块名称" prop="moduleName">
+      <el-input v-model="form.moduleName" />
     </el-form-item>
-    <el-form-item label="项目描述" prop="projectDescription">
-      <el-input v-model="form.projectDescription" />
+    <el-form-item label="项目模块描述" prop="moduleDescription">
+      <el-input v-model="form.moduleDescription" />
     </el-form-item>
     <!-- <el-form-item label="项目创建人" prop="projectCreatedBy">
       <el-input v-model="form.projectCreatedBy" />
@@ -33,13 +34,24 @@
 // 为了处理父组件传来的数据
 import { defineEmits } from 'vue';
 import { ref } from 'vue';
-import  {createProjects} from '@/api/projects'
+import  {createModules} from '@/api/projects'
 import { useStore } from 'vuex';
 
 const store = useStore()
 
+
+// 从父组件传来的表单数据
+const props = defineProps({
+    projectId:{
+        type:Number,
+        default:()=>0,
+    }
+})
+const projectId = ref()
+projectId.value = props.projectId
+
 // 接收父组件传来的数据
-const emits = defineEmits(['update:modelValue','initProjectList'])
+const emits = defineEmits(['update:modelValue','initGetModules'])
 const handleClose = () => {
     emits('update:modelValue', false)
 }
@@ -50,11 +62,9 @@ const handleConfirm = ()=>{
     formRef.value.validate(async (valid)=>{
         if(valid){
           console.log('success submit')
-          const now = new Date();
-          form.value.projectCreatedBy = store.getters.username
-          form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-          const res = await createProjects(form.value)
-          emits('initProjectList') //重新刷新项目列表
+          form.value.projectID = projectId.value
+          const res = await createModules(form.value)
+          emits('initGetModules') //重新刷新项目列表------------------------------------------需要更改
           handleClose()
         }else{
           console.log('error submit')
@@ -64,22 +74,19 @@ const handleConfirm = ()=>{
 }
 
 const form = ref({
-    "projectName": "",       // 项目名称
-  "projectDescription":"",  //项目描述
-  "projectCreatedBy": "",  // 创建人
-  "projectCreatedTime":""//创建时间(注意这里是string类型)
+"moduleID": "",       // 项目模块ID名称
+  "moduleName": "",  // 项目模块名称描述
+  "moduleDescription": "",  // 项目模块描述
+  "projectID": "",  // 项目ID
 })
 
 const rules = ref({
-    projectName: [
-        { required: true, message: '请输入项目名称', trigger: 'blur' }
+    moduleName: [
+        { required: true, message: '请输入模块名称', trigger: 'blur' }
       ],
-      projectDescription: [
-        { required: true, message: '请输入项目描述', trigger: 'blur' }
+    moduleDescription: [
+        { required: true, message: '请输入模块描述', trigger: 'blur' }
       ],
-      projectCreatedBy:[
-        { required: true, message: '请输入项目创建人', trigger: 'blur' }
-      ]
 })
 
 </script>

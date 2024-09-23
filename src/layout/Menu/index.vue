@@ -1,5 +1,6 @@
 <!-- 这里是导航栏的组件代码 -->
 <template>
+  <!-- defalut-active 默认激活对应的路由 -->
     <el-menu
         active-text-color="#ffd04b"
         background-color="#545c64"
@@ -29,18 +30,6 @@
           </el-menu-item>
             
         </el-sub-menu>
-        <!-- <el-menu-item index="2">
-          <el-icon><icon-menu /></el-icon>
-          <span>Navigator Two</span>
-        </el-menu-item>
-        <el-menu-item index="3" disabled>
-          <el-icon><document /></el-icon>
-          <span>Navigator Three</span>
-        </el-menu-item>
-        <el-menu-item index="4">
-          <el-icon><setting /></el-icon>
-          <span>Navigator Four</span>
-        </el-menu-item> -->
       </el-menu>
 </template>
 

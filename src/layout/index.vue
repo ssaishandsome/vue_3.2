@@ -10,6 +10,7 @@
         <el-container class="container" :class="{hidderContainer:!$store.getters.siderType}">
           <el-header><Headers/></el-header>
           <el-main>
+            <!-- <router-view> 标签作为占位符，路由的视图（或组件）将会被渲染到这个位置 -->
             <router-view></router-view>
           </el-main>
         </el-container>

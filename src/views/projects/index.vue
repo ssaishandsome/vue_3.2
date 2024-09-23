@@ -18,14 +18,20 @@
           </template>
 
         
-        <template #default v-slot="{row}" v-if="item.props === 'action'">
-          <el-button type="danger" :icon="Delete" circle />
-          <el-button type="primary" :icon="Edit" circle />
+        <template #default="{row}" v-if="item.props === 'action'">
+          <el-button type="danger" :icon="Delete" circle @click="handleDialog" />
+          <el-button type="primary" :icon="Edit" circle  @click="handleDialogEdit(row)"/>
         </template>
       </el-table-column>
     </el-table>
   </el-card>
+  <!-- 传入子组件的变量和函数，需要在这里传入 -->
   <Dialog v-model="dialogVisible" @initProjectList="initGetProjects"></Dialog>
+  <!-- 必须等点击编辑按钮之后，才能开始传数据，否则数据传送异步 -->
+  <span v-if="dialogEditVisible">  
+    <DialogEdit v-model="dialogEditVisible" @initProjectList="initGetProjects" :dialogEditTable="dialogEditTable"
+  :projectId="projectId" :dialogEditVisible="dialogEditVisible"
+  ></DialogEdit></span>
 </template>
 
 <script setup>
@@ -34,6 +40,7 @@ import {ref} from 'vue'
 import {getProjects} from '@/api/projects'
 import {options} from './options'
 import Dialog from './components/dialog.vue'
+import DialogEdit from './components/dialog_edit.vue';
 
 const queryForm = ref({
   query: '',
@@ -41,12 +48,31 @@ const queryForm = ref({
 
 const tableData = ref([])
 
-//控制弹窗的显示
+//控制添加项目的弹窗的显示
 const dialogVisible=ref(false)
 
 const handleDialog = () => {
   dialogVisible.value = true
 }
+//控制编辑项目的弹窗
+const dialogEditVisible=ref(false)
+
+// 编辑项目的弹窗中的编辑项目部分
+const dialogEditTable = ref({})
+
+//记录项目的ID
+const projectId = ref()
+
+const handleDialogEdit = async (row) => {
+  dialogEditVisible.value = true
+  //拿到代理对象的属性，使用JOSN.stringify()方法，将对象转换为字符串，再使用JSON.parse()方法，将字符串转换为对象
+  dialogEditTable.value = JSON.parse(JSON.stringify(row))
+  console.log(row)
+  projectId.value = dialogEditTable.value.projectId
+  // // 发送路由请求，获得模块列表
+  // ModulesList.value = await getModules(dialogEditTable.value.projectId)
+}
+
 
 
 const initGetProjects = async() => {

@@ -6,7 +6,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 const routes = [
     {
     path: '/login',
-    name: 'login',
+    name: 'login', 
     component: () => import(/* webpackChunkName: "about" */ '../views/login/index.vue')
   },
   {
