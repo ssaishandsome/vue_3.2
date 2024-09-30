@@ -17,7 +17,7 @@ export const createProjects = (data)=>{
 
 export const getModules = (projectId) =>{
   return request({
-    url:`module/list/${projectId}`,
+    url:`/module/list/${projectId}`,
     method: 'get',
   })
 }
@@ -30,12 +30,20 @@ export const createModules = (data)=>{
   })
 }
 
-export const getUsers = (projectId) =>{
+export const getUsers = (params) =>{
   return request({
-    url: `/project/showAllUser/${projectId}`,
-    method: 'get'
+    url: '/project/showAllUser',
+    method: 'get',
+    params
   })
 
+}
+
+export const addUsers = (projectId) => {
+  return request({
+    url: `/projects/addPeopleToProject/${projectId}`,
+    method : 'post'
+  })
 }
 
 export const deleteProject = (projectId) => {
