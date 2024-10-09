@@ -24,7 +24,16 @@
     <div style="display: flex; justify-content: flex-end;">
         <el-button type="primary" @click="handleDialog">添加项目模块</el-button>
     </div>
-        <el-table :data="tableData" stripe style="width: 100%">
+    <div style="display: flex; justify-content: center; font-weight: bold;">
+      <el-pagination
+      @current-change="handleCurrentChangeModule"
+      :current-page="currentPageModule"
+      layout="prev, pager, next"
+      :page-size="1"
+      :total="currentTotalModule">
+    </el-pagination>
+    </div>
+        <el-table :data="tableData" stripe style="width: 100%" >
         <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
             
             <template #default="{row}" v-if="item.props === 'action'">
@@ -172,14 +181,38 @@ const handleDialog = () => {
     //console.log('dialogModuleVisible',dialogModuleVisible.value)
 }
 
+
+const formMoudle = ref({
+  current: 1,
+  size: 2,
+})
+
+const currentPageModule = ref()
+const currentTotalModule = ref()
+
 //初始化模块列表
 const ModulesList = ref([])
 const initGetModules = async() => {
     // 发送路由请求，获得模块列表
-    ModulesList.value = await getModules(projectId.value)
-    console.log('初始化模块请求已经发送')
+    formMoudle.value.current = currentPageModule.value
+    const res = await getModules(projectId.value,formMoudle.value)
+    
+    // ModulesList.value = tableData.value.records
+    console.log(res)
+    currentPageModule.value = res.current
+    currentTotalModule.value = res.pages
+    console.log("总数：",currentTotalModule.value)
+    tableData.value = res.records
+    console.log('初始化模块请求已经发送', tableData.value)
 }
 
+
+
+// 项目翻页功能
+const handleCurrentChangeModule = (val) => {
+  currentPageModule.value = val
+  initGetModules()
+}
 
 
 // ____________________________________________________________________________________
