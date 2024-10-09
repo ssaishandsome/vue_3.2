@@ -9,7 +9,7 @@ export const getBugs = (params) => {
 
 export const createBugs = (data) => {
     return request({
-        url: '/bug/create',
+        url: '/bugs/create',
         method: 'post',
         data
     })
@@ -17,7 +17,7 @@ export const createBugs = (data) => {
 
 export const deleteBugs = (data) => {
     return request({
-        url: `/api/bugs/${bug_id}`,
+        url: `/bugs/${bug_id}`,
         method: 'get'
     })
 }

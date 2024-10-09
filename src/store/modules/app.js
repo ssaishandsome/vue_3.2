@@ -1,4 +1,5 @@
 import {login as loginApi} from '../../api/login.js'
+import {logout as logoutApi} from '../../api/login.js'
 import router from '../../router/index.js';
 import { setTokenTime } from '@/util/auth.js';
 
@@ -40,10 +41,10 @@ export default{
                 })
             })
         },
-        // logout({commit}){
-        //     commit('setToken','')
-        //     localStorage.clear();
-        //     router.replace('/login')
-        // }
+        logout({commit}){
+            commit('setToken','')
+            localStorage.clear();
+            router.replace('/login')
+        }
     }
 }

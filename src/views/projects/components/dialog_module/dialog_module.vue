@@ -62,7 +62,8 @@ const handleConfirm = ()=>{
     formRef.value.validate(async (valid)=>{
         if(valid){
           console.log('success submit')
-          form.value.projectID = projectId.value
+          form.value.projectId = projectId.value
+          console.log("模块的项目id",projectId.value)
           const res = await createModules(form.value)
           emits('initGetModules') //重新刷新项目列表------------------------------------------需要更改
           handleClose()
@@ -74,10 +75,10 @@ const handleConfirm = ()=>{
 }
 
 const form = ref({
-"moduleID": "",       // 项目模块ID名称
+// "moduleID": "",       // 项目模块ID名称
   "moduleName": "",  // 项目模块名称描述
   "moduleDescription": "",  // 项目模块描述
-  "projectID": "",  // 项目ID
+  "projectId": "",  // 项目ID
 })
 
 const rules = ref({
