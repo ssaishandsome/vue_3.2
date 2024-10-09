@@ -24,7 +24,16 @@
     <div style="display: flex; justify-content: flex-end;">
         <el-button type="primary" @click="handleDialog">添加项目模块</el-button>
     </div>
-        <el-table :data="tableData" stripe style="width: 100%">
+    <div style="display: flex; justify-content: center; font-weight: bold;">
+      <el-pagination
+      @current-change="handleCurrentChangeModule"
+      :current-page="currentPage"
+      layout="prev, pager, next"
+      :page-size="10"
+      :total="currentTotal">
+    </el-pagination>
+    </div>
+        <el-table :data="tableData" stripe style="width: 100%" >
         <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
             
             <template #default="{row}" v-if="item.props === 'action'">
@@ -77,7 +86,7 @@
 import {Delete} from '@element-plus/icons-vue'
 import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
-import  {createProjects, getModules, getMembers} from '@/api/projects'
+import  {createProjects, getModules, getMembers,createModules} from '@/api/projects'
 import { useStore } from 'vuex';
 import {options} from './options'
 import {useroptions} from './useroptions'
@@ -166,20 +175,51 @@ const rules = ref({
 // ____________________________________________________________________________________
 // 添加项目模块
 
+
+
 const dialogModuleVisible = ref(false)
 const handleDialog = () => {
     dialogModuleVisible.value = true
     //console.log('dialogModuleVisible',dialogModuleVisible.value)
 }
 
+
+
+const formMoudle = ref({
+  pageNum: 1,
+  pageSize: 10,
+})
+
+var currentPageModule = 1
+var currentTotalModule = 1
+
 //初始化模块列表
-const ModulesList = ref([])
+// const ModulesList = ref([])
+
+// 项目模块列表
+const tableData = ref([])
+
 const initGetModules = async() => {
     // 发送路由请求，获得模块列表
-    ModulesList.value = await getModules(projectId.value)
-    console.log('初始化模块请求已经发送')
+    formMoudle.value.pageNum = currentPageModule
+    const res = await getModules(projectId.value,formMoudle.value)
+    
+    // ModulesList.value = tableData.value.records
+    console.log(res)
+    currentPageModule = res.current
+    currentTotalModule = res.total
+    tableData.value = res.records
+    console.log(tableData.value)
+    console.log('初始化模块请求已经发送', typeof tableData.value, tableData.value.records)
 }
 
+
+
+// 项目翻页功能
+const handleCurrentChangeModule = (val) => {
+  currentPage = val
+  initGetModules()
+}
 
 
 // ____________________________________________________________________________________
@@ -227,7 +267,6 @@ if(props.dialogEditVisible){
     initGetMembers()
 }
 
-const tableData = ref([])
-tableData.value = ModulesList.value
+
 
 </script>

@@ -15,16 +15,17 @@ export const createProjects = (data)=>{
   })
 }
 
-export const getModules = (projectId) =>{
+export const getModules = (projectId,params) =>{
   return request({
-    url:`/module/list/${projectId}`,
+    url:`/modules/list/${projectId}`,
     method: 'get',
+    params
   })
 }
 
 export const createModules = (data)=>{
   return request({
-    url: '/module/add',
+    url: '/modules/add',
     method: 'post',
     data
   })
