@@ -33,6 +33,9 @@
         </el-table-column>
         </el-table>
 
+        <!-- 项目人员表 -->
+         
+
     <DialogMuduleEdit v-model="dialogModuleVisible" :projectId="projectId" @initGetModules="initGetModules"></DialogMuduleEdit>
     <template #footer>
       <div class="dialog-footer">

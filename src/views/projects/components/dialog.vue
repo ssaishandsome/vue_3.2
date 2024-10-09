@@ -49,13 +49,14 @@ const formRef = ref(null)
 const handleConfirm = ()=>{
     formRef.value.validate(async (valid)=>{
         if(valid){
-          console.log('success submit')
           const now = new Date();
           form.value.projectCreatedBy = store.getters.username
+          console.log(form.value.projectCreatedBy)
           form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
           const res = await createProjects(form.value)
           emits('initProjectList') //重新刷新项目列表
           handleClose()
+          console.log('success submit')
         }else{
           console.log('error submit')
           return false

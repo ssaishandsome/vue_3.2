@@ -7,7 +7,7 @@ export default{
     state:()=>({
         token: localStorage.getItem('token') || '',   //读取token，没读到就为空
         siderType:true,  //控制汉堡按钮的变量
-        username:'',
+        username:localStorage.getItem('username') || '',
     }),
     mutations:{
         setToken(state,token){
