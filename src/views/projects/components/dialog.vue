@@ -51,8 +51,9 @@ const handleConfirm = ()=>{
         if(valid){
           console.log('success submit')
           const now = new Date();
-          form.value.projectCreatedBy = store.getters.username
+          form.value.projectCreatedBy = store.getters.username  // username有概率无法正确获取（刷新后就拿不到了）
           form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+          console.log(form.value)
           const res = await createProjects(form.value)
           emits('initProjectList') //重新刷新项目列表
           handleClose()

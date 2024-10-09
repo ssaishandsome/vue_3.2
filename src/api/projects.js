@@ -32,24 +32,32 @@ export const createModules = (data)=>{
 
 export const getUsers = (params) =>{
   return request({
-    url: '/project/showAllUser',
+    url: '/user/showAllUser',
     method: 'get',
     params
   })
-
 }
 
-export const addUsers = (projectId) => {
+export const addUsers = (params) => {
   return request({
-    url: `/projects/addPeopleToProject/${projectId}`,
-    method : 'post'
+    url: '/projects/addMember',
+    method: 'post',
+    params
+  })
+}
+
+export const getMembers = (params) => {
+  return request({
+    url: '/projects/memberList',
+    method: 'get',
+    params
   })
 }
 
 export const deleteProject = (projectId) => {
   return request({
-    url: `/project/delete/${projectId}`,
-    method: 'get',
+    url: `/projects/delete/${projectId}`,
+    method: 'delete',
 
   })
 }

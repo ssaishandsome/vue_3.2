@@ -10,9 +10,5 @@ export const useroptions = [
   {
       label: '职位',
       props: 'role'
-    },
-  {
-      label: '',
-      props: 'action'
-  }
+    }
   ]

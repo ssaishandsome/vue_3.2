@@ -25,7 +25,7 @@
         <el-button type="primary" @click="handleDialog">添加项目模块</el-button>
     </div>
         <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
+        <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
             
             <template #default="{row}" v-if="item.props === 'action'">
             <el-button type="danger" :icon="Delete" circle @click="handleDialog" />
@@ -39,17 +39,27 @@
     <div style="display: flex; justify-content: flex-end;">
         <el-button type="primary" @click="handleDialogUser">添加项目人员</el-button>
     </div>
-        <el-table :data="tableDataUser" stripe style="width: 100%">
-        <el-table-column  width="180" v-for="(item,index) in useroptions" :key="index" :label="item.label" :prop="item.props">
+    <div style="display: flex; justify-content: center; font-weight: bold;">
+    <el-pagination
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      layout="prev, pager, next"
+      :page-size="10"
+      :total="currentTotal">
+    </el-pagination>
+    </div>
+        <el-table :data="UserList" stripe style="width: 100%">
+        <el-table-column  v-for="(item,index) in useroptions" :key="index" :label="item.label" :prop="item.props">
             
             <template #default="{row}" v-if="item.props === 'action'">
             <el-button type="danger" :icon="Delete" circle @click="handleDialog" />
             </template>
         </el-table-column>
         </el-table>
-
-    <DialogMuduleEdit v-model="dialogModuleVisible" :projectId="projectId" @initGetModules="initGetModules"></DialogMuduleEdit>
-    <DialogUserEdit v-model="dialogUserVisible" :projectId="projectId" @initGetUsers="initGetUsers"></DialogUserEdit>
+    <span v-if="dialogModuleVisible">
+    <DialogMuduleEdit v-model="dialogModuleVisible" :projectId="projectId" @initGetModules="initGetModules"></DialogMuduleEdit></span>
+    <span v-if="dialogUserVisible">
+    <DialogUserEdit v-model="dialogUserVisible" @initGetMembers="initGetMembers" :projectId="projectId" :dialogUserVisible="dialogUserVisible"></DialogUserEdit></span>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
@@ -64,9 +74,10 @@
 
 <script setup>
 // 为了处理父组件传来的数据
+import {Delete} from '@element-plus/icons-vue'
 import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
-import  {createProjects, getModules, getUsers} from '@/api/projects'
+import  {createProjects, getModules, getMembers} from '@/api/projects'
 import { useStore } from 'vuex';
 import {options} from './options'
 import {useroptions} from './useroptions'
@@ -181,22 +192,42 @@ const handleDialogUser = () => {
 } 
 
 //初始化人员列表
+
+const formMember = ref({
+  pageNum: 1,
+  pageSize: 10,
+  projectId: projectId.value
+})
+
+const tableDataUser = ref([])
 const UserList = ref([])
-const initGetUsers = async() => {
-    // 发送路由请求，获得用户列表
-    UserList.value = await getUsers(projectId.value)
-    console.log('初始化用户请求已经发送')
+let currentPage = 1
+let currentTotal = 1
+const initGetMembers = async() => {
+  formMember.value.pageNum = currentPage
+  tableDataUser.value = await getMembers(formMember.value)
+  console.log(tableDataUser.value)
+  UserList.value = tableDataUser.value.records
+  currentPage = tableDataUser.value.current
+  currentTotal = tableDataUser.value.total
+  console.log('初始化用户请求已经发送', typeof tableDataUser.value, tableDataUser.value.records)
+  console.log(UserList.value)
 }
+
+// 人员列表翻页功能
+const handleCurrentChange = (val) => {
+  currentPage = val
+  initGetMembers()
+}
+
+// 别忘了找鑫哥写删除接口
 
 if(props.dialogEditVisible){
     initGetModules()
-    initGetUsers()
+    initGetMembers()
 }
 
 const tableData = ref([])
 tableData.value = ModulesList.value
-
-const tableDataUser = ref([])
-tableDataUser.value = UserList.value
 
 </script>
