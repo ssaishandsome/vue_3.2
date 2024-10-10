@@ -86,7 +86,7 @@
 import {Delete} from '@element-plus/icons-vue'
 import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
-import  {createProjects, getModules, getMembers,createModules} from '@/api/projects'
+import  {createProjects, getModules, getMembers} from '@/api/projects'
 import { useStore } from 'vuex';
 import {options} from './options'
 import {useroptions} from './useroptions'
