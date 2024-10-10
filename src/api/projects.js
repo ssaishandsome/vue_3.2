@@ -39,11 +39,12 @@ export const getUsers = (params) =>{
   })
 }
 
-export const addUsers = (params) => {
+export const addUsers = (params, data) => {
   return request({
     url: '/projects/addMember',
     method: 'post',
-    params
+    params,
+    data
   })
 }
 

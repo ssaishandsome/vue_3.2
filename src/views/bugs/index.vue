@@ -1,17 +1,18 @@
 <template>
   <el-card>
     <el-row :gutter="20" class="header">
-      <el-col :span="7">
-        <el-input placeholder="请输入内容" v-model="queryForm.query"></el-input>
-      </el-col>
-      <el-col :span="8">
-        <el-button type="primary" :icon="Search" @click="initGetBugs">搜索</el-button>
-        <el-button type="primary" @click="handleDialog">添加Bug</el-button>
-      </el-col>
+      <el-select v-model="projectSelect" filterable placeholder="请选择" @change="initGetBugs">
+        <el-option
+          v-for="item in projectOptions"
+          :key="item.projectId"
+          :label="item.projectName"
+          :value="item.projectId">
+        </el-option>
+      </el-select>
     </el-row>
     
     <el-table :data="tableData" stripe style="width: 100%">
-      <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
+      <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
 
           <template v-slot="{row}" v-if="item.props === 'bugStatus'">
             <el-switch v-model="row.bugStatus" />
@@ -38,6 +39,7 @@
 import { Search,Delete,Edit } from '@element-plus/icons-vue';
 import {ref} from 'vue'
 import {getBugs, deleteBugs} from '@/api/bugs'
+import {getProjects} from '@/api/projects'
 import {options} from './options'
 import Dialog from './components/dialog.vue'
 import DialogEdit from './components/dialog_edit.vue';
@@ -47,6 +49,16 @@ const queryForm = ref({
 })
 
 const tableData = ref([])
+
+// 下拉菜单获取项目列表
+const projectSelect = ref()
+const projectOptions = ref([])
+
+const initGetProjects = async() => {
+  const res = await getProjects(queryForm.value)
+  projectOptions.value = res
+  console.log(projectOptions.value)
+}
 
 //控制添加bug的弹窗的显示
 const dialogVisible=ref(false)
@@ -88,6 +100,7 @@ const initGetBugs = async() => {
     console.log(tableData.value)
 }
 
+initGetProjects()
 initGetBugs()
 
 

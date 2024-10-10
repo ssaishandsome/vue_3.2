@@ -76,48 +76,32 @@ dialogUserVisible.value = props.dialogUserVisible
 console.log('projectId', projectId.value)
 console.log('dialogUservisible', dialogUserVisible.value)
 // 接收父组件传来的数据
-const emits = defineEmits(['update:modelValue', 'initGetMembers'])
+const emits = defineEmits(['update:modelValue','initGetMembers'])
 const handleClose = () => {
   emits('update:modelValue', false)
 }
 
 // 控制添加人员
-const newMember = ref([])
+const newMember = ref({
+  members: []
+})
 const formAdd = ref({
-projectId: projectId.value,
-members: newMember
+  projectId: projectId.value,
 })
 
-const handleAdd = () => {
+const handleAdd = async() => {
+  newMember.value.members = [] // 重置刷新一下
   for (let i = 0; i < AddUsersTable.value.length; i++) {
     console.log(AddUsersTable.value[i])
-    newMember.value.push(AddUsersTable.value[i])
+    newMember.value.members.push(AddUsersTable.value[i])
     console.log(newMember.value)
   }
   formAdd.value.projectId = projectId.value
-  formAdd.value.members = newMember.value
-  console.log(formAdd.value)
-  addUsers(formAdd.value)
+  console.log(formAdd.value.members)
+  const ret = await addUsers(formAdd.value, newMember.value)
+  console.log('添加人员', ret.value)
   emits('initGetMembers')
   handleClose()
-}
-
-const formRef = ref(null)
-// 使用formref.value.validate()进行表单验证
-const handleConfirm = () => {
-  formRef.value.validate(async (valid)=>{
-      if (valid) {
-        console.log('success submit')
-        handleAdd()
-        form.value.projectID = projectId.value
-        const res = await handleAdd(form.value)
-        emits('initGetUsers') // 重新刷新项目列表------------------------------------------需要更改
-        handleClose()
-      } else {
-        console.log('error submit')
-        return false
-      }
-  })
 }
 
 const form = ref({

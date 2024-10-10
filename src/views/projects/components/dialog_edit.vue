@@ -27,24 +27,10 @@
     <div style="display: flex; justify-content: center; font-weight: bold;">
       <el-pagination
       @current-change="handleCurrentChangeModule"
-<<<<<<< HEAD
-<<<<<<< HEAD
       :current-page="currentPageModule"
-      layout="prev, pager, next"
-      :page-size="1"
-      :total="currentTotalModule">
-=======
-      :current-page="currentPage"
       layout="prev, pager, next"
       :page-size="10"
-      :total="currentTotal">
->>>>>>> 9e7fd5d (修改了项目模块的显示问题)
-=======
-      :current-page="currentPageModule"
-      layout="prev, pager, next"
-      :page-size="1"
       :total="currentTotalModule">
->>>>>>> b183cf7 (解决模块列表的显示问题)
     </el-pagination>
     </div>
         <el-table :data="tableData" stripe style="width: 100%" >
@@ -198,32 +184,13 @@ const handleDialog = () => {
 }
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 const formMoudle = ref({
   current: 1,
-  size: 2,
+  size: 10,
 })
 
 const currentPageModule = ref()
 const currentTotalModule = ref()
-=======
-
-=======
->>>>>>> b183cf7 (解决模块列表的显示问题)
-const formMoudle = ref({
-  current: 1,
-  size: 2,
-})
-
-<<<<<<< HEAD
-var currentPageModule = 1
-var currentTotalModule = 1
->>>>>>> 9e7fd5d (修改了项目模块的显示问题)
-=======
-const currentPageModule = ref()
-const currentTotalModule = ref()
->>>>>>> b183cf7 (解决模块列表的显示问题)
 
 //初始化模块列表
 // const ModulesList = ref([])
@@ -233,55 +200,23 @@ const tableData = ref([])
 
 const initGetModules = async() => {
     // 发送路由请求，获得模块列表
-<<<<<<< HEAD
-<<<<<<< HEAD
     formMoudle.value.current = currentPageModule.value
-=======
-    formMoudle.value.pageNum = currentPageModule
->>>>>>> 9e7fd5d (修改了项目模块的显示问题)
-=======
-    formMoudle.value.current = currentPageModule.value
->>>>>>> b183cf7 (解决模块列表的显示问题)
     const res = await getModules(projectId.value,formMoudle.value)
     
     // ModulesList.value = tableData.value.records
     console.log(res)
-<<<<<<< HEAD
-<<<<<<< HEAD
     currentPageModule.value = res.current
     currentTotalModule.value = res.pages
     console.log("总数：",currentTotalModule.value)
     tableData.value = res.records
     console.log('初始化模块请求已经发送', tableData.value)
-=======
-    currentPageModule = res.current
-    currentTotalModule = res.total
-    tableData.value = res.records
-    console.log(tableData.value)
-    console.log('初始化模块请求已经发送', typeof tableData.value, tableData.value.records)
->>>>>>> 9e7fd5d (修改了项目模块的显示问题)
-=======
-    currentPageModule.value = res.current
-    currentTotalModule.value = res.pages
-    console.log("总数：",currentTotalModule.value)
-    tableData.value = res.records
-    console.log('初始化模块请求已经发送', tableData.value)
->>>>>>> b183cf7 (解决模块列表的显示问题)
 }
 
 
 
 // 项目翻页功能
 const handleCurrentChangeModule = (val) => {
-<<<<<<< HEAD
-<<<<<<< HEAD
   currentPageModule.value = val
-=======
-  currentPage = val
->>>>>>> 9e7fd5d (修改了项目模块的显示问题)
-=======
-  currentPageModule.value = val
->>>>>>> b183cf7 (解决模块列表的显示问题)
   initGetModules()
 }
 
