@@ -1,23 +1,32 @@
 import request from './request'
 
-export const getTests = (params) => {
+export const getTests = (projectId,params) => {
     return request({
-        url: '/api/test-cases',
+        url: `/testcases/${projectId}`,
+        method: 'get',
         params
     })
 }
 
 export const createTests = (data) => {
     return request({
-        url: '/api/test-cases',
+        url: '/testcases/create',
         method: 'post',
         data
     })
 }
 
-export const deleteTests = (testId) => {
+export const updateTests = (testCaseId, data) => {
     return request({
-        url: `/api/test-cases/${testId}`,
+        url: `/testcases/${testCaseId}`,
+        method: 'put',
+        data
+    })
+}
+
+export const deleteTests = (testCaseId) => {
+    return request({
+        url: `/api/test-cases/${testCaseId}`,
         method: 'get'
     })
 }

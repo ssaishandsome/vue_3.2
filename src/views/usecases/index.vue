@@ -1,21 +1,35 @@
 <template>
   <el-card>
     <el-row :gutter="20" class="header">
-      <el-col :span="7">
-        <el-input placeholder="请输入内容" v-model="queryForm.query"></el-input>
+      <el-col :span="11">
+        <el-select v-model="projectSelect" filterable placeholder="请选择" @change="initGetTests">
+        <el-option
+          v-for="item in projectOptions"
+          :key="item.projectId"
+          :label="item.projectName"
+          :value="item.projectId">
+        </el-option>
+      </el-select>
       </el-col>
+      
+
       <el-col :span="8">
-        <el-button type="primary" :icon="Search" @click="initGetTests">搜索</el-button>
         <el-button type="primary" @click="handleDialog">添加用例</el-button>
       </el-col>
     </el-row>
-    
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="currentPage"
+        layout="prev, pager, next"
+        :page-size="10"
+        :total="currentTotal">
+      </el-pagination>
     <el-table :data="tableData" stripe style="width: 100%">
       <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
 
-          <template v-slot="{row}" v-if="item.props === 'testStatus'">
+          <!-- <template v-slot="{row}" v-if="item.props === 'testStatus'">
             <el-switch v-model="row.testStatus" />
-          </template>
+          </template> -->
 
         
         <template #default="{row}" v-if="item.props === 'action'">
@@ -29,8 +43,8 @@
   <Dialog v-model="dialogVisible" @initTestList="initGetTests"></Dialog>
   <!-- 必须等点击编辑按钮之后，才能开始传数据，否则数据传送异步 -->
   <span v-if="dialogEditVisible">  
-    <DialogEdit v-model="dialogEditVisible" @initTestList="initGetTests" :dialogEditTable="dialogEditTable"
-  :testId="testId" :dialogEditVisible="dialogEditVisible"
+    <DialogEdit v-model="dialogEditVisible" @initTestList="reGetTests" :dialogEditTable="dialogEditTable"
+  :testCaseId="testCaseId" :dialogEditVisible="dialogEditVisible"
   ></DialogEdit></span>
 </template>
 
@@ -38,6 +52,7 @@
 import { Search,Delete,Edit } from '@element-plus/icons-vue';
 import {ref} from 'vue'
 import {getTests, deleteTests} from '@/api/usecases'
+import { getProjects } from '@/api/projects';
 import {options} from './options'
 import Dialog from './components/dialog.vue'
 import DialogEdit from './components/dialog_edit.vue';
@@ -47,6 +62,17 @@ const queryForm = ref({
 })
 
 const tableData = ref([])
+
+// 下拉菜单获取项目列表
+const projectSelect = ref()
+const projectOptions = ref([])
+
+const initGetProjects = async() => {
+  const res = await getProjects(queryForm.value)
+  projectOptions.value = res
+  console.log('所选项目', projectOptions.value)
+}
+initGetProjects()
 
 //控制添加用例的弹窗的显示
 const dialogVisible=ref(false)
@@ -61,14 +87,14 @@ const dialogEditVisible=ref(false)
 const dialogEditTable = ref({})
 
 //记录用例的ID
-const testId = ref()
+const testCaseId = ref()
 
 const handleDialogEdit = async (row) => {
   dialogEditVisible.value = true
   //拿到代理对象的属性，使用JOSN.stringify()方法，将对象转换为字符串，再使用JSON.parse()方法，将字符串转换为对象
   dialogEditTable.value = JSON.parse(JSON.stringify(row))
-  console.log(row)
-  testId.value = dialogEditTable.value.testId
+  //console.log('编辑用例',dialogEditTable.value)
+  testCaseId.value = dialogEditTable.value.testCaseId
   // // 发送路由请求，获得？？列表
   // ModulesList.value = await getModules(dialogEditTable.value.testId)
 }
@@ -81,14 +107,35 @@ const handleDelete = async(row) => {
   initGetTests()
 }
 
-const initGetTests = async() => {
-    const res = await getTests(queryForm.value)
-    //console.log(res)
-    tableData.value = res
-    console.log(tableData.value)
+const form = ref({
+  size: 10,
+  current: 1
+
+})
+
+let currentPage = 1
+let currentTotal = 1
+let projectId = 0
+
+const handleCurrentChange = (val) => {
+  currentPage = val
+  initGetTests(projectId)
 }
 
-initGetTests()
+const initGetTests = async(val) => {
+    console.log(val)
+    projectId = val
+    form.value.current = currentPage
+    const res = await getTests(val, form.value)
+    tableData.value = res.records
+    console.log("初始化测试用例的列表",tableData.value)
+    currentPage = res.current
+    currentTotal = res.total
+}
+
+const reGetTests = () => {
+  initGetTests(projectId)
+}
 
 
 

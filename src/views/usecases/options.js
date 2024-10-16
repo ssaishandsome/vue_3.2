@@ -1,27 +1,31 @@
 export const options = [
   {
     label: '用例ID',
-    props: 'testId'
+    props: 'testCaseId'
   },
   {
     label: '用例名称',
-    props: 'testName'
+    props: 'testCaseName'
   },
 {
-    label: '用例描述',
-    props: 'testDescription'
+    label: '用例目的描述',
+    props: 'testPurpose'
   },
 {
-    label: '用例创建人',
-    props: 'testCreatedBy'
+    label: '用例前置条件',
+    props: 'preconditions'
   },
 {
-    label: '用例创建时间',
-    props: 'testCreatedTime'
+    label: '用例步骤',
+    props: 'testSteps'
+  },
+  {
+    label: '用例预期结果',
+    props: 'expectedResult'
   },
   {
     label: '优先级',
-    props: 'testPriority'
+    props: 'priority'
   },
 {
     label: '',

@@ -31,6 +31,18 @@ export const getModules = (projectId,params) =>{
   })
 }
 
+export const StatusChange = (projectId, projectStatus) => {
+  return request({
+    url: `/projects/statusSwitch/${projectId}`,
+    method: 'put',
+    data:{
+      projectId,
+      projectStatus
+    }
+  })
+}
+
+
 export const createModules = (data)=>{
   return request({
     url: '/modules/add',

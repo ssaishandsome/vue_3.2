@@ -5,6 +5,7 @@
       />
         <template #dropdown>
         <el-dropdown-menu>
+          <el-dropdown-item>{{role}}</el-dropdown-item>
             <el-dropdown-item @click="Logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
         </template>
@@ -16,6 +17,8 @@
 import { useStore } from 'vuex';
 import {logout}  from '@/api/login'
 import router from '@/router/index.js'
+
+const role = localStorage.getItem('role')
 
 const store = useStore()
 const Logout = async() => {
