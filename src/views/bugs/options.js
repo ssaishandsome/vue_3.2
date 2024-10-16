@@ -9,19 +9,31 @@ export const options = [
   },
 {
     label: 'Bug描述',
-    props: 'bugDescription'
+    props: 'bugContent'
   },
 {
-    label: 'Bug创建人',
-    props: 'bugCreatedBy'
-  },
-{
-    label: 'Bug创建时间',
-    props: 'bugCreatedTime'
+    label: 'Bug优先级',
+    props: 'bugGrade'
   },
   {
-    label: '优先级',
-    props: 'bugPriority'
+    label: 'Bug创建时间',
+    props: 'bugCreateTime'
+  },
+  {
+    label: 'Bug状态',
+    props: 'bugState'
+  },
+  {
+    label: '项目Id',
+    props: 'bugProject'
+  },
+  {
+    label: '模块Id',
+    props: 'bugModule'
+  },
+  {
+    label: '用例Id',
+    props: 'testCaseId'
   },
 {
     label: '',

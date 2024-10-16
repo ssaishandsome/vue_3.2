@@ -37,7 +37,7 @@
         <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
             
             <template #default="{row}" v-if="item.props === 'action'">
-            <el-button type="danger" :icon="Delete" circle @click="handleDialog" />
+            <el-button type="danger" :icon="Delete" circle @click="handleDeleteModule(row)" />
             </template>
         </el-table-column>
         </el-table>
@@ -57,11 +57,11 @@
       :total="currentTotal">
     </el-pagination>
     </div>
-        <el-table :data="UserList" stripe style="width: 100%">
+        <el-table :data="userList" stripe style="width: 100%">
         <el-table-column  v-for="(item,index) in useroptions" :key="index" :label="item.label" :prop="item.props">
             
-            <template #default="{row}" v-if="item.props === 'action'">
-            <el-button type="danger" :icon="Delete" circle @click="handleDialog" />
+            <template #default="{row2}" v-if="item.props === 'action'">
+            <el-button type="danger" :icon="Delete" circle @click="handleDeleteUser" />
             </template>
         </el-table-column>
         </el-table>
@@ -86,7 +86,7 @@
 import {Delete} from '@element-plus/icons-vue'
 import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
-import  {createProjects, getModules, getMembers} from '@/api/projects'
+import  {createProjects, getModules, getMembers, submitProjects, deleteModule} from '@/api/projects'
 import { useStore } from 'vuex';
 import {options} from './options'
 import {useroptions} from './useroptions'
@@ -138,7 +138,11 @@ const handleClose = () => {
     emits('update:modelValue', false)
 }
 
-
+const formSubmit = ref({
+  "projectId": projectId.value,
+  "projectName": "",
+  "projectDescription":""
+})
 
 const formRef = ref(null)
 // 使用formref.value.validate()进行表单验证
@@ -149,8 +153,10 @@ const handleConfirm = ()=>{
           const now = new Date();
           form.value.projectCreatedBy = store.getters.username
           form.value.projectCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-/////////////////////////////////////////////////////////////////
-          const res = await createProjects(form.value)
+          formSubmit.value.projectName = form.value.projectName
+          formSubmit.value.projectDescription = form.value.projectDescription
+          console.log(formSubmit.value)
+          const res = await submitProjects(formSubmit.value)
 
           emits('initProjectList') //重新刷新项目列表
           handleClose()
@@ -220,6 +226,18 @@ const handleCurrentChangeModule = (val) => {
   initGetModules()
 }
 
+const tem = ref({})
+const moduleId = ref()
+
+// 模块删除功能
+const handleDeleteModule = async(row) => {
+  tem.value = JSON.parse(JSON.stringify(row))
+  console.log(tem.value)
+  moduleId.value = tem.value.moduleId
+  console.log(moduleId.value)
+  await deleteModule(moduleId.value)
+  initGetModules()
+}
 
 // ____________________________________________________________________________________
 // 添加人员
@@ -239,18 +257,18 @@ const formMember = ref({
 })
 
 const tableDataUser = ref([])
-const UserList = ref([])
+const userList = ref([])
 let currentPage = 1
 let currentTotal = 1
 const initGetMembers = async() => {
   formMember.value.pageNum = currentPage
   tableDataUser.value = await getMembers(formMember.value)
   console.log(tableDataUser.value)
-  UserList.value = tableDataUser.value.records
+  userList.value = tableDataUser.value.records
   currentPage = tableDataUser.value.current
   currentTotal = tableDataUser.value.total
   console.log('初始化用户请求已经发送', typeof tableDataUser.value, tableDataUser.value.records)
-  console.log(UserList.value)
+  console.log(userList.value)
 }
 
 // 人员列表翻页功能

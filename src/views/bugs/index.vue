@@ -1,6 +1,7 @@
 <template>
   <el-card>
     <el-row :gutter="20" class="header">
+      <el-col :span="11">
       <el-select v-model="projectSelect" filterable placeholder="请选择" @change="initGetBugs">
         <el-option
           v-for="item in projectOptions"
@@ -9,16 +10,20 @@
           :value="item.projectId">
         </el-option>
       </el-select>
+    </el-col>
+    <el-col :span="12">
+        <el-button type="primary" @click="handleDialog">创建Bug</el-button>
+      </el-col>
     </el-row>
-    
-    <el-table :data="tableData" stripe style="width: 100%">
+    <el-pagination
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      layout="prev, pager, next"
+      :page-size="10"
+      :total="currentTotal">
+    </el-pagination>
+    <el-table :data="bugList" stripe style="width: 100%">
       <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
-
-          <template v-slot="{row}" v-if="item.props === 'bugStatus'">
-            <el-switch v-model="row.bugStatus" />
-          </template>
-
-        
         <template #default="{row}" v-if="item.props === 'action'">
           <el-button type="danger" :icon="Delete" circle @click="handleDelete(row)" />
           <el-button type="primary" :icon="Edit" circle  @click="handleDialogEdit(row)"/>
@@ -27,10 +32,10 @@
     </el-table>
   </el-card>
   <!-- 传入子组件的变量和函数，需要在这里传入 -->
-  <Dialog v-model="dialogVisible" @initBugList="initGetBugs"></Dialog>
+  <Dialog v-model="dialogVisible" @initGetBugs="reGetBugs" :queryForm="queryForm"></Dialog>
   <!-- 必须等点击编辑按钮之后，才能开始传数据，否则数据传送异步 -->
   <span v-if="dialogEditVisible">  
-    <DialogEdit v-model="dialogEditVisible" @initBugList="initGetBugs" :dialogEditTable="dialogEditTable"
+    <DialogEdit v-model="dialogEditVisible" @initGetBugs="reGetBugs" :dialogEditTable="dialogEditTable"
   :bugId="bugId" :dialogEditVisible="dialogEditVisible"
   ></DialogEdit></span>
 </template>
@@ -57,7 +62,7 @@ const projectOptions = ref([])
 const initGetProjects = async() => {
   const res = await getProjects(queryForm.value)
   projectOptions.value = res
-  console.log(projectOptions.value)
+  console.log('所选项目', projectOptions.value)
 }
 
 //控制添加bug的弹窗的显示
@@ -89,20 +94,47 @@ const tem = ref({})
 const handleDelete = async(row) => {
   tem.value = JSON.parse(JSON.stringify(row))
   bugId.value = tem.value.bugId
+  console.log(bugId.value)
   await deleteBugs(bugId.value)
-  initGetBugs()
+  initGetBugs(projectId)
 }
 
-const initGetBugs = async() => {
-    const res = await getBugs(queryForm.value)
-    //console.log(res)
-    tableData.value = res
-    console.log(tableData.value)
+const form = ref({
+  size: 10,
+  current: 1
+
+})
+
+let currentPage = 1
+let currentTotal = 1
+
+let projectId = 0
+
+const handleCurrentChange = (val) => {
+  currentPage = val
+  initGetBugs(projectId)
+}
+
+const tableDataBugs = ref([])
+const bugList = ref([])
+
+const initGetBugs = async(val) => {
+  console.log(val)
+  projectId = val
+  form.value.pageNum = currentPage
+  tableDataBugs.value = await getBugs(val, form.value)
+  console.log(tableDataBugs.value)
+  currentPage = tableDataBugs.value.current
+  currentTotal = tableDataBugs.value.total
+  bugList.value = tableDataBugs.value.records
+  console.log('初始化bug请求已经发送', bugList.value)
+}
+
+const reGetBugs = () => {
+  initGetBugs(projectId)
 }
 
 initGetProjects()
-initGetBugs()
-
 
 
 </script>

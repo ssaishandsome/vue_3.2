@@ -26,7 +26,7 @@ service.interceptors.request.use((config)=>{
   timeout: 5000,
 });
   config.headers['token'] = localStorage.getItem('token')
-  //config.headers['token'] = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoi6aG555uu57uP55CGIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3MjgzNTc4NTEsImV4cCI6MTcyODM2NTA1MX0.3AuSVhM2tuDh67Xf9uV7hrUnhwsxZKycH8-9MlImk7Y'
+  // config.headers['token'] = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoi6aG555uu57uP55CGIiwic3ViIjoiYWRtaW4iLCJpYXQiOjE3Mjg0NTU0MTMsImV4cCI6MTcyODU0MTgxM30.Sq-eH2nSl5hrdEuP6z9A6nGQERER77MvzvqWo2qAnYk'
   //console.log(config)
   return config
 },error=>{
@@ -36,10 +36,11 @@ service.interceptors.request.use((config)=>{
 
 //一个响应请求拦截器,来拦截服务器发送的响应，并进行处理响应状态的
 service.interceptors.response.use((response)=>{
+  //console.log(response)
   const {code,msg,data} = response.data;
-  if(code === 200 || code === 201){
+  if(code === 200 || code === 201 || code === 3){
     //ElMessage(msg)
-    //console.log(data)
+    
     return data;
   }else{
     //element plus 消息提示

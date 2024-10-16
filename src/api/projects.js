@@ -15,9 +15,17 @@ export const createProjects = (data)=>{
   })
 }
 
+export const submitProjects = (data) => {
+  return request({
+    url: '/projects/submit',
+    method: 'put',
+    data
+  })
+}
+
 export const getModules = (projectId,params) =>{
   return request({
-    url:`/modules/list/${projectId}`,
+    url: `/modules/list/${projectId}`,
     method: 'get',
     params
   })
@@ -28,6 +36,20 @@ export const createModules = (data)=>{
     url: '/modules/add',
     method: 'post',
     data
+  })
+}
+
+export const getSingleModule = (moduleId) => {
+  return request({
+    url: `/modules/detail/${moduleId}`,
+    method: 'get'
+  })
+}
+
+export const deleteModule = (moduleId) => {
+  return request({
+    url: `/modules/delete/${moduleId}`,
+    method: 'delete'
   })
 }
 

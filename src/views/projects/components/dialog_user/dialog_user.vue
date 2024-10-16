@@ -17,7 +17,7 @@
   </el-pagination>
   </div>
   <el-table
-    :data="UserList"
+    :data="userList"
     stripe
     style="width: 100%"
     ref="AddUsersTable"
@@ -112,17 +112,17 @@ const form = ref({
 
 // 获得没有加入这个项目的人员列表
 const tableDataUser = ref([])
-const UserList = ref([])
+const userList = ref([])
 let currentPage = 1
 let currentTotal = 1
 const initGetUsers = async() => {
   form.value.pageNum = currentPage
   tableDataUser.value = await getUsers(form.value)
-  UserList.value = tableDataUser.value.records
+  userList.value = tableDataUser.value.records
   currentPage = tableDataUser.value.current
   currentTotal = tableDataUser.value.total
   console.log('初始化用户请求已经发送', typeof tableDataUser.value, tableDataUser.value.records)
-  console.log(UserList.value)
+  console.log(userList.value)
 }
 
 // 人员列表翻页功能

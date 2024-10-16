@@ -76,6 +76,7 @@ const handleDialogEdit = async (row) => {
 const tem = ref({})
 const handleDelete = async(row) => {
   tem.value = JSON.parse(JSON.stringify(row))
+  console.log(tem.value)
   projectId.value = tem.value.projectId
   await deleteProject(projectId.value)
   initGetProjects()

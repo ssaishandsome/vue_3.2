@@ -8,16 +8,46 @@
     @close="handleClose"
     >
     <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" style="max-width: 600px">
-    <el-form-item label="Bug名称" prop="bugName">
-      <el-input v-model="form.bugName" />
-    </el-form-item>
-    <el-form-item label="Bug描述" prop="bugDescription">
-      <el-input v-model="form.bugDescription" />
-    </el-form-item>
-    <!-- <el-form-item label="Bug创建人" prop="bugCreatedBy">
-      <el-input v-model="form.bugCreatedBy" />
-    </el-form-item> -->
-  </el-form>
+      <el-form-item label="Bug名称" prop="bugName">
+        <el-input v-model="form.bugName" />
+      </el-form-item>
+      <el-form-item label="Bug描述" prop="bugContent">
+        <el-input v-model="form.bugContent" />
+      </el-form-item>
+      <el-form-item label="Bug创建人" prop="bugBuilder">
+        <el-input v-model="form.bugBuilder" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="Bug创建时间" prop="bugCreateTime">
+        <el-input v-model="form.bugCreateTime" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="Bug解决时间" prop="bugSolvedTime">
+        <el-input v-model="form.bugSolvedTime" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="Bug优先度">
+      <el-radio-group v-model="form.bugGrade" size="medium" @change="gradeChange">
+        <el-radio border label="高"></el-radio>
+        <el-radio border label="中"></el-radio>
+        <el-radio border label="低"></el-radio>
+      </el-radio-group>
+      </el-form-item>
+      <el-form-item label="所属模块" prop="moduleName">
+        <el-input v-model="moduleName" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="所属用例" prop="testCaseId">
+        <!--出于易读性，这里本来应该显示用例的名字而非id，然后后端并没有写完-->
+        <el-input v-model="form.testCaseId" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="用例步骤" prop="testCaseSteps">
+        <el-input v-model="testCaseSteps" :disabled="true"/>
+      </el-form-item>
+      <el-form-item label="Bug状态">
+      <el-radio-group v-model="form.bugState" size="medium" @change="stateChange">
+        <el-radio border label="待修改"></el-radio>
+        <el-radio border label="已修改"></el-radio>
+        <el-radio border label="不修改"></el-radio>
+      </el-radio-group>
+      </el-form-item>
+    </el-form>
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
@@ -27,22 +57,32 @@
       </div>
     </template>
   </el-dialog>
-  
 </template>
 
 <script setup>
 // 为了处理父组件传来的数据
 import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
-import  {createBugs} from '@/api/bugs'
+import  {createBugs, submitBug, resolveBug} from '@/api/bugs'
+import {getSingleModule} from '@/api/projects'
 import { useStore } from 'vuex';
 
 const form = ref({
-    "bugName": "",       // 用例名称
-  "bugDescription":"",  //用例描述
-  "bugCreatedBy": "",  // 创建人
-  "bugCreatedTime":""//创建时间(注意这里是string类型)
+  "bugId":"",
+  "bugName": "",       // bug名称
+  "bugContent":"",  // bug描述
+  "bugModule": "", // bug所属模块
+  "bugBuilder": "",  // 创建人
+  "productManager":"",
+  "bugGrade": "", // bug等级
+  "bugCreateTime":"", // 创建时间(注意这里是string类型)
+  "bugSolvedTime":"", // bug解决时间
+  "bugProject": "",
+  "testCaseId": "", // 测试用例Id
+  "bugState": ""
 })
+
+let testCaseSteps = '这里应该描述用例步骤，然而测试用例部分并没有后端' // 这里应该描述用例步骤，然而测试用例部分并没有后端
 
 // 从父组件传来的表单数据
 const props = defineProps({
@@ -75,28 +115,47 @@ const store = useStore()
 
 
 // 接收父组件传来的数据
-const emits = defineEmits(['update:modelValue','initBugList'])
+const emits = defineEmits(['update:modelValue','initGetBugs'])
 const handleClose = () => {
     emits('update:modelValue', false)
 }
 // modelvalue是干嘛的来着///////////////////////////
 
+const moduleName = ref('')
+const getModuleName = async() => {
+  const res = ref(await getSingleModule(form.value.bugModule))
+  console.log(res.value.moduleName)
+  moduleName.value = res.value.moduleName
+}
+
+const stateChange = (val) => {
+  form.value.bugState = val
+  console.log('changeState', form.value.bugState)
+}
+
+const gradeChange = (val) => {
+  form.value.bugGrade = val
+  console.log('changeGrade', form.value.bugGrade)
+}
 
 const formRef = ref(null)
 // 使用formref.value.validate()进行表单验证
-const handleConfirm = ()=>{
-    formRef.value.validate(async (valid)=>{
-        if(valid){
-          console.log('success submit')
-          const now = new Date();
-          form.value.bugCreatedBy = store.getters.username
-          form.value.bugCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-/////////////////////////////////////////////////////////////////
-          const res = await createBugs(form.value)
-
-          emits('initBugList') //重新刷新项目列表
+const handleConfirm = () => {
+    formRef.value.validate(async (valid) => {
+        if (valid) {
+          //console.log('success submit')
+          const now = new Date()
+          if (form.value.bugState === "已修改" || form.value.bugState === "不修改") {
+            //console.log('try resolve')
+            const rez = await resolveBug(bugId.value)
+            form.value.bugSolvedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString()
+            //console.log('sucess resolve')
+          }
+          await submitBug(bugId.value, form.value)
+          //console.log('sucess resolvezckjzxkljclsjadl')
+          emits('initGetBugs') //重新刷新项目列表
           handleClose()
-        }else{
+        } else {
           console.log('error submit')
           return false
         }
@@ -109,11 +168,11 @@ const rules = ref({
     bugName: [
         { required: true, message: '请输入Bug名称', trigger: 'blur' }
       ],
-      bugDescription: [
+      bugContent: [
         { required: true, message: '请输入Bug描述', trigger: 'blur' }
       ],
 })
 
-
+getModuleName()
 
 </script>
