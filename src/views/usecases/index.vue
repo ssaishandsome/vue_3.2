@@ -1,23 +1,29 @@
 <template>
   <el-card>
     <el-row :gutter="20" class="header">
-      <el-col :span="7">
-        <el-input placeholder="请输入内容" v-model="queryForm.query"></el-input>
-      </el-col>
-      <el-col :span="8">
-        <el-button type="primary" :icon="Search" @click="initGetTests">搜索</el-button>
-        <el-button type="primary" @click="handleDialog">添加用例</el-button>
+      <el-col :span="11">
+      <el-select v-model="projectSelect" filterable placeholder="请选择" @change="initGetTestCases">
+        <el-option
+          v-for="item in projectOptions"
+          :key="item.projectId"
+          :label="item.projectName"
+          :value="item.projectId">
+        </el-option>
+      </el-select>
+    </el-col>
+    <el-col :span="12">
+        <el-button type="primary" @click="handleDialog">创建用例</el-button>
       </el-col>
     </el-row>
-    
-    <el-table :data="tableData" stripe style="width: 100%">
-      <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
-
-          <template v-slot="{row}" v-if="item.props === 'testStatus'">
-            <el-switch v-model="row.testStatus" />
-          </template>
-
-        
+    <el-pagination
+      @current-change="handleCurrentChange"
+      :current-page="currentPage"
+      layout="prev, pager, next"
+      :page-size="10"
+      :total="currentTotal">
+    </el-pagination>
+    <el-table :data="CaseList" stripe style="width: 100%">
+      <el-table-column  v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
         <template #default="{row}" v-if="item.props === 'action'">
           <el-button type="danger" :icon="Delete" circle @click="handleDelete(row)" />
           <el-button type="primary" :icon="Edit" circle  @click="handleDialogEdit(row)"/>
@@ -26,18 +32,19 @@
     </el-table>
   </el-card>
   <!-- 传入子组件的变量和函数，需要在这里传入 -->
-  <Dialog v-model="dialogVisible" @initTestList="initGetTests"></Dialog>
+  <Dialog v-model="dialogVisible" @initGetTestCases="reGetTestCases" :queryForm="queryForm"></Dialog>
   <!-- 必须等点击编辑按钮之后，才能开始传数据，否则数据传送异步 -->
   <span v-if="dialogEditVisible">  
-    <DialogEdit v-model="dialogEditVisible" @initTestList="initGetTests" :dialogEditTable="dialogEditTable"
-  :testId="testId" :dialogEditVisible="dialogEditVisible"
+    <DialogEdit v-model="dialogEditVisible" @initGetTestCases="reGetTestCases" :dialogEditTable="dialogEditTable"
+  :testCaseId="testCaseId" :dialogEditVisible="dialogEditVisible"
   ></DialogEdit></span>
 </template>
 
 <script setup>
 import { Search,Delete,Edit } from '@element-plus/icons-vue';
 import {ref} from 'vue'
-import {getTests, deleteTests} from '@/api/usecases'
+import {getTestCases, deleteTestCase} from '@/api/usecases'
+import {getProjects} from '@/api/projects'
 import {options} from './options'
 import Dialog from './components/dialog.vue'
 import DialogEdit from './components/dialog_edit.vue';
@@ -48,6 +55,16 @@ const queryForm = ref({
 
 const tableData = ref([])
 
+// 下拉菜单获取项目列表
+const projectSelect = ref()
+const projectOptions = ref([])
+
+const initGetProjects = async() => {
+  const res = await getProjects(queryForm.value)
+  projectOptions.value = res
+  console.log('所选项目', projectOptions.value)
+}
+
 //控制添加用例的弹窗的显示
 const dialogVisible=ref(false)
 
@@ -57,39 +74,68 @@ const handleDialog = () => {
 //控制编辑用例的弹窗
 const dialogEditVisible=ref(false)
 
-// 编辑用例的弹窗中的编辑用例部分
+// 编辑bug的弹窗中的编辑bug部分
 const dialogEditTable = ref({})
 
 //记录用例的ID
-const testId = ref()
+const testCaseId = ref()
 
 const handleDialogEdit = async (row) => {
   dialogEditVisible.value = true
   //拿到代理对象的属性，使用JOSN.stringify()方法，将对象转换为字符串，再使用JSON.parse()方法，将字符串转换为对象
   dialogEditTable.value = JSON.parse(JSON.stringify(row))
   console.log(row)
-  testId.value = dialogEditTable.value.testId
+  testCaseId.value = dialogEditTable.value.testCaseId
   // // 发送路由请求，获得？？列表
-  // ModulesList.value = await getModules(dialogEditTable.value.testId)
+  // ModulesList.value = await getModules(dialogEditTable.value.testCaseId)
 }
 
 const tem = ref({})
 const handleDelete = async(row) => {
   tem.value = JSON.parse(JSON.stringify(row))
-  testId.value = tem.value.testId
-  await deleteTests(testId.value)
-  initGetTests()
+  testCaseId.value = tem.value.testCaseId
+  console.log(testCaseId.value)
+  await deleteTestCase(testCaseId.value)
+  console.log('success')
+  initGetTestCases(projectId)
 }
 
-const initGetTests = async() => {
-    const res = await getTests(queryForm.value)
-    //console.log(res)
-    tableData.value = res
-    console.log(tableData.value)
+const form = ref({
+  size: 10,
+  current: 1
+
+})
+
+let currentPage = 1
+let currentTotal = 1
+
+let projectId = 0
+
+const handleCurrentChange = (val) => {
+  currentPage = val
+  initGetTestCases(projectId)
 }
 
-initGetTests()
+const tableDataTestCases = ref([])
+const CaseList = ref([])
 
+const initGetTestCases = async(val) => {
+  console.log(val)
+  projectId = val
+  form.value.pageNum = currentPage
+  tableDataTestCases.value = await getTestCases(val, form.value)
+  console.log(tableDataTestCases.value)
+  currentPage = tableDataTestCases.value.current
+  currentTotal = tableDataTestCases.value.total
+  CaseList.value = tableDataTestCases.value.records
+  console.log('初始化用例请求已经发送', CaseList.value)
+}
+
+const reGetTestCases = () => {
+  initGetTestCases(projectId)
+}
+
+initGetProjects()
 
 
 </script>

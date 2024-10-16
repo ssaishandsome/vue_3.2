@@ -38,15 +38,14 @@
      </el-select>
      </el-form-item>
     <el-form-item label="所属用例" prop="testCaseId">
-    <!--<el-select v-model="caseSelect" filterable placeholder="请选择" >
+    <el-select v-model="form.testCaseId" filterable placeholder="请选择" >
       <el-option
-        v-for="item in caseOptions"
-        :key="item.caseId"
-        :label="item.caseName"
-        :value="item.caseId">
+        v-for="item in testCaseOptions"
+        :key="item.testCaseId"
+        :label="item.testCaseName"
+        :value="item.testCaseId">
       </el-option>
-      </el-select>-->
-      <el-input v-model="form.testCaseId" />
+      </el-select>
       </el-form-item>
       <el-form-item label="Bug优先度">
       <el-radio-group v-model="form.bugGrade" size="medium">
@@ -73,6 +72,7 @@ import { defineEmits } from 'vue';
 import { ref } from 'vue';
 import  {createBugs} from '@/api/bugs'
 import {getProjects, getModules} from '@/api/projects'
+import {getTestCases} from '@/api/usecases'
 import { useStore } from 'vuex';
 
 const store = useStore()
@@ -136,6 +136,7 @@ const initGetProjects = async() => {
 }
 
 const moduleOptions = ref([])
+const moduleSelected = ref({})
 
 const initGetModules = async(val) => {
   projectSelected.value = projectOptions.value.find(({ projectId }) => projectId === val)
@@ -144,7 +145,13 @@ const initGetModules = async(val) => {
   moduleOptions.value = res.records
 }
 
-const initGetCases = () => {} // 没有用例！
+const testCaseOptions = ref([])
+
+const initGetCases = async(val) => {
+  moduleSelected.value = moduleOptions.value.find(({ moduleId }) => moduleId === val)
+  const res = await getModules(val, listPages.value)
+  moduleOptions.value = res.records
+}
 
 const form = ref({
     "bugName": "",       // 项目名称

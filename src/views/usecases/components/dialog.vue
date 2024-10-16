@@ -1,118 +1,170 @@
 <template>
-    <!-- model-value 实现单向绑定 -->
-    <el-dialog
-    :model-value="dialogVisible"
-    title="添加用例"
-    width="500"
-    :before-close="handleClose"
-    @close="handleClose"
-    >
-    <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" style="max-width: 600px">
-    <el-form-item label="用例名称" prop="testName">
-      <el-input v-model="form.testName" />
+  <!-- model-value 实现单向绑定 -->
+  <el-dialog
+  :model-value="dialogVisible"
+  title="添加用例"
+  width="500"
+  :before-close="handleClose"
+  @close="handleClose"
+  >
+  <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" style="max-width: 600px">
+  <el-form-item label="用例名称" prop="testCaseName">
+    <el-input v-model="form.testCaseName" />
+  </el-form-item>
+  <el-form-item label="用例目的" prop="testPurpose">
+    <el-input v-model="form.testPurpose" />
+  </el-form-item>
+  <el-form-item label="前置条件" prop="preconditions">
+    <el-input v-model="form.preconditions" />
+  </el-form-item>
+  <el-form-item label="用例步骤" prop="testSteps">
+    <el-input v-model="form.testSteps" />
+  </el-form-item>
+  <el-form-item label="预期结果" prop="expectedResult">
+    <el-input v-model="form.expectedResult" />
+  </el-form-item>
+  <el-form-item label="所属项目" prop="projectId">
+  <el-select v-model="form.projectId" filterable placeholder="请选择" @change="initGetModules">
+      <el-option
+        v-for="item in projectOptions"
+        :key="item.projectId"
+        :label="item.projectName"
+        :value="item.projectId">
+      </el-option>
+    </el-select>
     </el-form-item>
-    <el-form-item label="用例描述" prop="testDescription">
-      <el-input v-model="form.testDescription" />
+  <el-form-item label="所属模块" prop="moduleId">
+  <el-select v-model="form.moduleId" filterable placeholder="请选择" >
+    <el-option
+      v-for="item in moduleOptions"
+      :key="item.moduleId"
+      :label="item.moduleName"
+      :value="item.moduleId">
+    </el-option>
+   </el-select>
+   </el-form-item>
+    <el-form-item label="用例优先度" prop="priority">
+    <el-radio-group v-model="form.priority" size="medium">
+      <el-radio border label="高"></el-radio>
+      <el-radio border label="中"></el-radio>
+      <el-radio border label="低"></el-radio>
+    </el-radio-group>
     </el-form-item>
-    <el-form-item label="所属项目" prop="projectId">
-      <el-select v-model="form.projectId" placeholder="选择一个项目">
-        <el-option label="Zone one" value="shanghai" />
-        <el-option label="Zone two" value="beijing" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="所属模块" prop="moduleId">
-      <el-select v-model="form.moduleId" placeholder="选择一个模块">
-        <el-option label="Zone one" value="shanghai" />
-        <el-option label="Zone two" value="beijing" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="优先级" prop="testPriority">
-      <el-select v-model="form.testPriority" placeholder="设定优先级">
-        <el-option label="Zone one" value="shanghai" />
-        <el-option label="Zone two" value="beijing" />
-      </el-select>
-    </el-form-item>
-    <!-- <el-form-item label="用例创建人" prop="testCreatedBy">
-      <el-input v-model="form.testCreatedBy" />
-    </el-form-item> -->
-  </el-form>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="handleConfirm">
-          确认
-        </el-button>
-      </div>
-    </template>
-  </el-dialog>
+</el-form>
+  <template #footer>
+    <div class="dialog-footer">
+      <el-button @click="handleClose">取消</el-button>
+      <el-button type="primary" @click="handleConfirm">
+        确认
+      </el-button>
+    </div>
+  </template>
+</el-dialog>
 </template>
 
 <script setup>
 // 为了处理父组件传来的数据
 import { defineEmits } from 'vue';
 import { ref } from 'vue';
-import  {createTests} from '@/api/usecases'
+import  {createTestCase} from '@/api/usecases'
+import {getProjects, getModules} from '@/api/projects'
 import { useStore } from 'vuex';
 
 const store = useStore()
 
+const queryForm = ref({
+query: '',
+})
+
 // 接收父组件传来的数据
-const emits = defineEmits(['update:modelValue','initTestList'])
+const emits = defineEmits(['update:modelValue','initGetTestCases', 'queryForm'])
 const handleClose = () => {
-    emits('update:modelValue', false)
+  emits('update:modelValue', false)
 }
 
 //  modelvalue是干嘛的////////////////////
 
+const listPages = ref({
+current: 1,
+size: 1000
+})
+
 const formRef = ref(null)
 // 使用formref.value.validate()进行表单验证
 const handleConfirm = ()=>{
-    formRef.value.validate(async (valid)=>{
-        if(valid){
-          console.log('success submit')
-          const now = new Date();
-          form.value.testCreatedBy = store.getters.username
-          form.value.testCreatedTime = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
-          const res = await createTests(form.value)
-          emits('initTestList') //重新刷新项目列表
-          handleClose()
-        }else{
-          console.log('error submit')
-          return false
-        }
-    })
+  formRef.value.validate(async (valid)=>{
+      if(valid){
+        console.log('success submit')
+        const now = new Date();
+        form.value.creator = store.getters.username
+        console.log('新用例信息', form.value)
+        const res = await createTestCase(form.value)
+        emits('initGetTestCases') //重新刷新项目列表
+        handleClose()
+      }else{
+        console.log('error submit')
+        return false
+      }
+  })
+}
+
+const projectOptions = ref([])
+const projectSelected = ref({})
+
+const initGetProjects = async() => {
+const res = await getProjects(queryForm.value)
+projectOptions.value = res
+console.log('所选项目', projectOptions.value)
+}
+
+const moduleOptions = ref([])
+
+const initGetModules = async(val) => {
+projectSelected.value = projectOptions.value.find(({ projectId }) => projectId === val)
+form.value.productManager = projectSelected.value.projectCreatedBy
+const res = await getModules(val, listPages.value)
+moduleOptions.value = res.records
 }
 
 const form = ref({
-    "testName": "",       // 用例名称
-  "testDescription":"",  //用例描述
-  "testCreatedBy": "",  // 创建人
-  "testCreatedTime":"",//创建时间(注意这里是string类型)
-  "projectId":"",//所属项目
-  "moduleId":"",//所属模块
-  "testPriority":""   //优先级
+  "creator": "",  // 创建人
+  "expectedResult":"", // 用例目的
+  "moduleId": "", // bug所属模块
+  "preconditions":"", // 用例前置条件
+  "priority": "", // 用例优先度
+  "projectId": "",
+  "testCaseName": "", // 用例名称
+  "testPurpose":"",  // 用例目的
+  "testSteps": "", // 测试步骤
 })
 
 const rules = ref({
-    testName: [
-        { required: true, message: '请输入用例名称', trigger: 'blur' }
-      ],
-      testDescription: [
-        { required: true, message: '请输入用例描述', trigger: 'blur' }
-      ],
-      testCreatedBy:[
-        { required: true, message: '请输入用例创建人', trigger: 'blur' }
-      ],
-      projectId:[
-        {required: true, message: '请选择用例所属项目', trigger: 'blur'}
-      ],
-      moduleId:[
-        {required: true, message: '请选择用例所属模块', trigger: 'blur'}
-      ],
-      testPriority:[
-        {required: true, message: '请选择用例优先级', trigger: 'blur'}
-      ]
-
+    testCaseName: [
+      { required: true, message: '请输入用例名称', trigger: 'blur' }
+    ],
+    testPurpose: [
+      { required: true, message: '请输入用例目的', trigger: 'blur' }
+    ],
+    testSteps: [
+      { required: true, message: '请输入用例步骤', trigger: 'blur' }
+    ],
+    preconditions: [
+      { required: true, message: '请输入前置条件', trigger: 'blur' }
+    ],
+    expetedResult: [
+      { required: true, message: '请输入预期结果', trigger: 'blur' }
+    ],
+    priority: [
+      { required: true, message: '请选择用例优先级', trigger: 'blur' }
+    ],
+    projectId: [
+      { required: true, message: '请选择项目', trigger: 'blur' }
+    ],
+    moduleId: [
+      { required: true, message: '请选择模块', trigger: 'blur' }
+    ],
 })
+
+initGetProjects()
 
 </script>
