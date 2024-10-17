@@ -14,13 +14,13 @@
       <el-table-column  width="180" v-for="(item,index) in options" :key="index" :label="item.label" :prop="item.props">
 
           <template v-slot="{row}" v-if="item.props === 'projectStatus'">
-            <el-switch v-model="row.projectStatus" />
+            <el-switch :disabled="role !== '项目经理'" @change="statusChange(row)" v-model="row.projectStatus" />
           </template>
 
         
         <template #default="{row}" v-if="item.props === 'action'">
-          <el-button type="danger" :icon="Delete" circle @click="handleDelete(row)" />
-          <el-button type="primary" :icon="Edit" circle  @click="handleDialogEdit(row)"/>
+          <el-button type="danger"  :disabled="role !== '项目经理'" :icon="Delete" circle @click="handleDelete(row)" />
+          <el-button type="primary" :disabled="role !== '项目经理'" :icon="Edit" circle  @click="handleDialogEdit(row)"/>
         </template>
       </el-table-column>
     </el-table>
@@ -37,7 +37,7 @@
 <script setup>
 import { Search,Delete,Edit } from '@element-plus/icons-vue';
 import {ref} from 'vue'
-import {getProjects,deleteProject} from '@/api/projects'
+import {getProjects,deleteProject,StatusChange} from '@/api/projects'
 import {options} from './options'
 import Dialog from './components/dialog.vue'
 import DialogEdit from './components/dialog_edit.vue';
@@ -45,6 +45,14 @@ import DialogEdit from './components/dialog_edit.vue';
 const queryForm = ref({
   query: '',
 })
+
+const role = localStorage.getItem('role')
+
+// 状态更改函数
+const statusChange = async (row) => {
+  const res = await StatusChange(row.projectId, row.projectStatus)
+  console.log(res)
+}
 
 const tableData = ref([])
 

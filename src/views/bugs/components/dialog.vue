@@ -18,7 +18,7 @@
       <el-input v-model="form.bugBuilder" />
     </el-form-item> -->
     <el-form-item label="所属项目" prop="bugProject">
-    <el-select v-model="form.bugProject" filterable placeholder="请选择" @change="initGetModules">
+    <el-select v-model="form.bugProject" filterable placeholder="请选择" @change="initGetCases">
         <el-option
           v-for="item in projectOptions"
           :key="item.projectId"
@@ -27,18 +27,8 @@
         </el-option>
       </el-select>
       </el-form-item>
-    <el-form-item label="所属模块" prop="bugModule">
-    <el-select v-model="form.bugModule" filterable placeholder="请选择" @change="initGetCases"> <!--并没有用例-->
-      <el-option
-        v-for="item in moduleOptions"
-        :key="item.moduleId"
-        :label="item.moduleName"
-        :value="item.moduleId">
-      </el-option>
-     </el-select>
-     </el-form-item>
     <el-form-item label="所属用例" prop="testCaseId">
-    <el-select v-model="form.testCaseId" filterable placeholder="请选择" >
+    <el-select v-model="form.testCaseId" filterable placeholder="请选择" @change="getModule">
       <el-option
         v-for="item in testCaseOptions"
         :key="item.testCaseId"
@@ -71,7 +61,7 @@
 import { defineEmits } from 'vue';
 import { ref } from 'vue';
 import  {createBugs} from '@/api/bugs'
-import {getProjects, getModules} from '@/api/projects'
+import {getProjects} from '@/api/projects'
 import {getTestCases} from '@/api/usecases'
 import { useStore } from 'vuex';
 
@@ -135,22 +125,21 @@ const initGetProjects = async() => {
   console.log('所选项目', projectOptions.value)
 }
 
-const moduleOptions = ref([])
-const moduleSelected = ref({})
-
-const initGetModules = async(val) => {
-  projectSelected.value = projectOptions.value.find(({ projectId }) => projectId === val)
-  form.value.productManager = projectSelected.value.projectCreatedBy
-  const res = await getModules(val, listPages.value)
-  moduleOptions.value = res.records
-}
-
 const testCaseOptions = ref([])
+const testCaseSelected = ref({})
 
 const initGetCases = async(val) => {
-  moduleSelected.value = moduleOptions.value.find(({ moduleId }) => moduleId === val)
-  const res = await getModules(val, listPages.value)
-  moduleOptions.value = res.records
+  projectSelected.value = projectOptions.value.find(({ projectId }) => projectId === val)
+  const res = await getTestCases(val, listPages.value)
+  form.value.productManager = projectSelected.value.projectCreatedBy
+  testCaseOptions.value = res.records
+  console.log(testCaseOptions.value)
+}
+
+const getModule = (val) => {
+  testCaseSelected.value = testCaseOptions.value.find(({ testCaseId }) => testCaseId === val)
+  console.log(testCaseSelected.value.moduleId)
+  form.value.bugModule = testCaseSelected.value.moduleId
 }
 
 const form = ref({

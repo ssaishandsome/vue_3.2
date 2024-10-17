@@ -23,6 +23,17 @@ export const submitProjects = (data) => {
   })
 }
 
+export const StatusChange = (projectId, projectStatus) => {
+  return request({
+    url: `/projects/statusSwitch/${projectId}`,
+    method: 'put',
+    data:{
+      projectId,
+      projectStatus
+    }
+  })
+}
+
 export const getModules = (projectId,params) =>{
   return request({
     url: `/modules/list/${projectId}`,

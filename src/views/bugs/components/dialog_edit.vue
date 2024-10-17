@@ -65,6 +65,7 @@ import { defineEmits, defineProps, watch } from 'vue';
 import { ref } from 'vue';
 import  {createBugs, submitBug, resolveBug} from '@/api/bugs'
 import {getSingleModule} from '@/api/projects'
+import {getTestCases} from '@/api/usecases'
 import { useStore } from 'vuex';
 
 const form = ref({
@@ -82,7 +83,7 @@ const form = ref({
   "bugState": ""
 })
 
-let testCaseSteps = '这里应该描述用例步骤，然而测试用例部分并没有后端' // 这里应该描述用例步骤，然而测试用例部分并没有后端
+const testCaseSteps = ref('这里应该描述用例步骤，然而测试用例部分并没有后端') // 这里应该描述用例步骤，然而测试用例部分并没有后端
 
 // 从父组件传来的表单数据
 const props = defineProps({
@@ -162,7 +163,21 @@ const handleConfirm = () => {
     })
 }
 
+const listPages = ref({
+  size: 1000,
+  current: 1
+})
 
+const testCaseSelected = ref()
+
+const getCaseSteps = async() => {
+  const res = await getTestCases(form.value.bugProject, listPages.value)
+  console.log('res:', res)
+  res.value = res.records
+  testCaseSelected.value = res.value.find(({ testCaseId }) => testCaseId === form.value.testCaseId)
+  console.log(testCaseSelected.value)
+  testCaseSteps.value = testCaseSelected.value.testSteps
+}
 
 const rules = ref({
     bugName: [
@@ -172,7 +187,8 @@ const rules = ref({
         { required: true, message: '请输入Bug描述', trigger: 'blur' }
       ],
 })
-
+getCaseSteps()
 getModuleName()
+
 
 </script>

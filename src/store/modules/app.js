@@ -9,6 +9,7 @@ export default{
         token: localStorage.getItem('token') || '',   //读取token，没读到就为空
         siderType:true,  //控制汉堡按钮的变量
         username:localStorage.getItem('username') || '',
+        role: localStorage.getItem('role') || ''
     }),
     mutations:{
         setToken(state,token){
@@ -23,6 +24,10 @@ export default{
             state.username = username;
             localStorage.setItem('username',username);
         },
+        setRole(state,role){
+            state.role = role;
+            localStorage.setItem('role',role);
+        }
     },
     actions:{
         login({commit},userInfo){
@@ -33,6 +38,7 @@ export default{
                     console.log(res)
                     // commit调用mutations中的方法
                     commit('setToken',res.token);
+                    commit('setRole',res.role)
                     setTokenTime();
                     router.replace('/');
                     resolve(res)
